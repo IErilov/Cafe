@@ -6,6 +6,7 @@ from models.base import VisitLog
 from network import Network
 from routers.cafe import router as cafe_router 
 from sqladmin import Admin
+from sqladmin_inline import setup_inline_routes
 from admin.auth import AdminAuth
 from admin.interface import CafeAdmin, MenuCategoryAdmin, MenuItemAdmin, ComboAdmin, ComboItemAdmin
 import os
@@ -39,6 +40,7 @@ admin = Admin(
     title="Admin panel",
     )
 
+setup_inline_routes(admin)
 admin.add_view(CafeAdmin)
 admin.add_view(MenuCategoryAdmin)
 admin.add_view(MenuItemAdmin)

@@ -3,6 +3,7 @@ from sqladmin import ModelView
 from models.cafe import Cafe
 from models.menu import MenuCategory, MenuItem
 from models.combo import Combo, ComboItem
+from sqladmin_inline import InlineModelAdmin, ModelViewWithInlines
 
 class CafeAdmin(ModelView, model=Cafe):
     column_list = [Cafe.id, Cafe.name, Cafe.adress]
@@ -16,7 +17,6 @@ class CafeAdmin(ModelView, model=Cafe):
 class MenuCategoryAdmin(ModelView, model=MenuCategory):
     column_list = [MenuCategory.id, MenuCategory.name, MenuCategory.slug, MenuCategory.is_active, MenuCategory.cafe]
     column_searchable_list = [MenuCategory.name, MenuCategory.slug]
-    column_filters = [MenuCategory.cafe_id, MenuCategory.is_active]
     form_columns = [MenuCategory.cafe, MenuCategory.name, MenuCategory.slug, MenuCategory.is_active]
     icon = "fa-solid fa-list"
     name = "Категория меню"
@@ -25,30 +25,25 @@ class MenuCategoryAdmin(ModelView, model=MenuCategory):
 class MenuItemAdmin(ModelView, model=MenuItem):
     column_list = [MenuItem.id, MenuItem.title, MenuItem.category, MenuItem.parent, MenuItem.order, MenuItem.is_active]
     column_searchable_list = [MenuItem.title]
-    column_filters = [MenuItem.category_id, MenuItem.is_active]
     form_columns = [MenuItem.category, MenuItem.parent, MenuItem.title, MenuItem.order, MenuItem.price, MenuItem.calories, MenuItem.Proteins, MenuItem.Fats, MenuItem.Carbs, MenuItem.is_active]
     icon = "fa-solid fa-bars"
     name = "Пункт меню"
     name_plural = "Пункты меню"
 
-class ComboAdmin(ModelView, model=Combo):
-    column_list = [
-        Combo.id,
-        Combo.name,
-        Combo.price,
-        Combo.is_active,
-        Combo.items,
-    ]
+class ComboItemInline(InlineModelAdmin, model=ComboItem):
+    inline_label = "Товары в комбо"
+    column_list = [ComboItem.menu_item, ComboItem.quantity]
+    column_searchable_list = [ComboItem.menu_item]
+    form_columns = [ComboItem.menu_item, ComboItem.quantity]
+    can_create = True
+    can_delete = True
+
+class ComboAdmin(ModelViewWithInlines, model=Combo):
+    column_list = [Combo.id, Combo.name, Combo.price, Combo.is_active]
     column_searchable_list = [Combo.name]
     column_sortable_list = [Combo.id, Combo.name, Combo.price]
-    column_filters = [Combo.is_active]
-    form_columns = [
-        Combo.name,
-        Combo.description,
-        Combo.price,
-        Combo.is_active,
-        Combo.items,
-    ]
+    form_columns = [Combo.name, Combo.description, Combo.price, Combo.is_active]
+    inlines = [ComboItemInline]  # ключевая строка
     icon = "fa-solid fa-box-open"
     name = "Комбо"
     name_plural = "Комбо"
@@ -61,7 +56,6 @@ class ComboItemAdmin(ModelView, model=ComboItem):
         ComboItem.menu_item,
         ComboItem.quantity,
     ]
-    column_filters = [ComboItem.combo]
     form_columns = [
         ComboItem.combo,
         ComboItem.menu_item,
