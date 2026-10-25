@@ -47,7 +47,7 @@ class MenuItem(Base):
     order: Mapped[str] = mapped_column(String(100), default="NOT ORDER")
     price: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
 
-    calories: Mapped[str] = mapped_column(String(20), default="0")
+    calories: Mapped[int] = mapped_column(Integer, nullable=False, default="0")
     Proteins: Mapped[int] = mapped_column(Integer, default=0)
     Fats: Mapped[int] = mapped_column(Integer, default=0)
     Carbs: Mapped[int] = mapped_column(Integer, default=0)

@@ -4,6 +4,12 @@ from models.cafe import Cafe
 from models.menu import MenuCategory, MenuItem
 from models.combo import Combo, ComboItem
 from sqladmin_inline import InlineModelAdmin, ModelViewWithInlines
+from User.model import User
+from starlette.requests import Request
+
+from wtforms import Form, PasswordField, StringField, IntegerField
+from wtforms.validators import DataRequired, Optional
+import bcrypt
 
 class CafeAdmin(ModelView, model=Cafe):
     column_list = [Cafe.id, Cafe.name, Cafe.adress]
@@ -64,3 +70,46 @@ class ComboItemAdmin(ModelView, model=ComboItem):
     icon = "fa-solid fa-link"
     name = "Состав комбо"
     name_plural = "Состав комбо"
+
+class UserAdmin(ModelView, model=User):
+    column_list = [
+        User.id, 
+        User.uname, 
+        User.name, 
+        User.sur_name, 
+        User.yo
+    ]
+    column_searchable_list = [User.uname, User.name, User.sur_name]
+    column_sortable_list = [User.id, User.uname, User.yo]
+    
+    icon = "fa-solid fa-users"
+    name = "Пользователь"
+    name_plural = "Пользователи"
+
+    async def scaffold_form(self, rules: list | None = None) -> type[Form]:
+        class UserForm(Form):
+            uname = StringField("Имя пользователя (логин)", validators=[DataRequired()])
+            password = PasswordField("Новый пароль") 
+            name = StringField("Имя", validators=[DataRequired()])
+            sub_name = StringField("Отчество", validators=[DataRequired()])
+            sur_name = StringField("Фамилия", validators=[DataRequired()])
+            yo = IntegerField("Возраст", validators=[DataRequired()])
+            mass = IntegerField("Вес", validators=[DataRequired()])
+            height = IntegerField("Рост", validators=[DataRequired()])
+            desc = StringField("Описание", validators=[Optional()])
+            
+        return UserForm
+
+
+    async def on_model_change(self, data: dict, model: User, is_created: bool, request: Request) -> None:
+        if "password" in data and data["password"]:
+            plain_password = data["password"]
+            
+            password_bytes = plain_password.encode('utf-8')
+            salt = bcrypt.gensalt()
+            hashed = bcrypt.hashpw(password_bytes, salt)
+            
+            model._password_hash = hashed.decode('utf-8')
+            
+        if "password" in data:
+            del data["password"]

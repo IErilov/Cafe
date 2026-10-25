@@ -8,7 +8,7 @@ from routers.cafe import router as cafe_router
 from sqladmin import Admin
 from sqladmin_inline import setup_inline_routes
 from admin.auth import AdminAuth
-from admin.interface import CafeAdmin, MenuCategoryAdmin, MenuItemAdmin, ComboAdmin, ComboItemAdmin
+from admin.interface import CafeAdmin, MenuCategoryAdmin, MenuItemAdmin, ComboAdmin, ComboItemAdmin, UserAdmin
 import os
 
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-in-prod")
@@ -46,3 +46,4 @@ admin.add_view(MenuCategoryAdmin)
 admin.add_view(MenuItemAdmin)
 admin.add_view(ComboAdmin)
 admin.add_view(ComboItemAdmin)
+admin.add_view(UserAdmin)

@@ -10,7 +10,6 @@ if TYPE_CHECKING:
 
 
 class ComboItem(Base):
-    """Промежуточная таблица: какой товар входит в какое комбо и в каком количестве."""
     __tablename__ = "combo_items"
     __table_args__ = (
         UniqueConstraint("combo_id", "menu_item_id", name="uq_combo_item"),
